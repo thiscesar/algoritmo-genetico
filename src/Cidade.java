@@ -33,6 +33,12 @@ public class Cidade {
         return cidades;
     }
 
+    public double distanciaAte(Cidade outra) {
+        float dx = this.x - outra.x;
+        float dy = this.y - outra.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
     public float getX() {
         return x;
     }
