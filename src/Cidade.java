@@ -2,21 +2,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Um ponto no mapa. Só sabe onde está e calcular a distância até outra cidade.
+ */
 public class Cidade {
     private static final float MIN_XY = 0f;
     private static final float MAX_XY = 1000f;
 
-    private float x;
-    private float y;
+    private final float x;
+    private final float y;
 
     public Cidade(float x, float y) {
         this.x = x;
         this.y = y;
-    }
-
-    public Cidade() {
-        Random random = new Random();
-        gerar(random);
     }
 
     public static Cidade gerar(Random random) {
@@ -49,6 +47,6 @@ public class Cidade {
 
     @Override
     public String toString() {
-        return "Cidade(x=" + x + ", y=" + y + ")";
+        return String.format("Cidade(x=%.1f, y=%.1f)", x, y);
     }
 }

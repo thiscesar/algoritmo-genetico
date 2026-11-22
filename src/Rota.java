@@ -3,12 +3,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Rota {
-    private List<Cidade> cidades;
-    private double distancia = -1;
+/**
+ * Um indivíduo: uma ordem de visita às cidades.
+ *
+ * Responsabilidade: representar uma rota e dizer o quão boa ela é.
+ * Ela NÃO sabe nada de seleção, cruzamento ou mutação.
+ *
+ * É imutável: depois de criada, a ordem nunca muda. Para "alterar" uma rota,
+ * cria-se uma nova. Por isso a distância pode ser calculada uma única vez,
+ * no construtor, sem precisar de cache com -1.
+ */
+public final class Rota {
+    private final List<Cidade> cidades;
+    private final double distanciaTotal;
 
     public Rota(List<Cidade> cidades) {
-        this.cidades = new ArrayList<>(cidades); // copia, para não mexer na lista original
+        this.cidades = List.copyOf(cidades); // cópia que não pode ser modificada
+        this.distanciaTotal = calcularDistancia(this.cidades);
     }
 
     public static Rota aleatoria(List<Cidade> cidadesBase, Random random) {
@@ -17,40 +28,39 @@ public class Rota {
         return new Rota(copia);
     }
 
+    private static double calcularDistancia(List<Cidade> cidades) {
+        double total = 0;
+        for (int i = 0; i < cidades.size(); i++) {
+            Cidade atual = cidades.get(i);
+            Cidade proxima = cidades.get((i + 1) % cidades.size()); // volta ao início
+            total += atual.distanciaAte(proxima);
+        }
+        return total;
+    }
+
     public double distanciaTotal() {
-        if (distancia < 0) {
-            distancia = 0;
-            for (int i = 0; i < cidades.size(); i++) {
-                Cidade atual = cidades.get(i);
-                Cidade proxima = cidades.get((i + 1) % cidades.size());
-                distancia += atual.distanciaAte(proxima);
-            }
-        }
-
-        return distancia;
+        return distanciaTotal;
     }
 
-    //  menor distancia, maior  fitness
+    // menor distância, maior fitness
     public double fitness() {
-        return 1.0 / distanciaTotal();
+        return 1.0 / distanciaTotal;
     }
 
-    // Mutação: troca duas cidades de lugar
-    public void mutar(double taxa, Random random) {
-        if (random.nextDouble() < taxa) {
-            int i = random.nextInt(cidades.size());
-            int j = random.nextInt(cidades.size());
-            Collections.swap(cidades, i, j);
-            distancia = -1; // a ordem mudou, precisa recalcular
-        }
+    public int tamanho() {
+        return cidades.size();
+    }
+
+    public Cidade cidadeEm(int posicao) {
+        return cidades.get(posicao);
     }
 
     public List<Cidade> getCidades() {
-        return cidades;
+        return cidades; // seguro: a lista não pode ser modificada
     }
 
     @Override
     public String toString() {
-        return "Rota(distancia=" + String.format("%.2f", distanciaTotal()) + ")";
+        return String.format("Rota(distancia=%.2f)", distanciaTotal);
     }
 }
