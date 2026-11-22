@@ -15,14 +15,14 @@ public class Main {
         // 2. a configuração
         AlgoritmoGenetico ag = new AlgoritmoGenetico(
                 100,   // tamanho da população
-                1000,   // gerações
+                100,   // gerações
                 0.02,  // taxa de mutação
                 5,     // tamanho do torneio
                 seed
         );
 
         // 3. a tela (20 ms de pausa entre gerações, para dar tempo de ver a evolução)
-        Visualizador tela = Visualizador.abrir("Caixeiro-viajante com Algoritmo Genético", 100);
+        Visualizador tela = Visualizador.abrir("Caixeiro-viajante com Algoritmo Genético", 600);
 
         // 4. a execução: a cada geração, o algoritmo avisa a tela
         Rota melhor = ag.executar(cidades, tela::atualizar);

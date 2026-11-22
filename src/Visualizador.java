@@ -1,7 +1,9 @@
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,8 +16,10 @@ import java.util.List;
 
 /**
  * Responsabilidade: mostrar na tela a evolução do algoritmo.
- * Desenha a melhor rota da geração atual e um gráfico da distância ao longo do tempo.
- * Não sabe nada sobre como o algoritmo funciona: só recebe (geração, rota) e desenha.
+ * Desenha a melhor rota da geração atual e um gráfico da distância ao longo do
+ * tempo.
+ * Não sabe nada sobre como o algoritmo funciona: só recebe (geração, rota) e
+ * desenha.
  */
 public class Visualizador extends JPanel {
     private static final int MARGEM = 30;
@@ -30,6 +34,7 @@ public class Visualizador extends JPanel {
     private static final Color COR_BORDA = new Color(60, 60, 75);
 
     private final int pausaMs;
+    private final Controle controle = new Controle();
     private final List<Double> historico = new ArrayList<>();
     private Rota melhorRota;
     private int geracao;
@@ -46,7 +51,9 @@ public class Visualizador extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame janela = new JFrame(titulo);
             janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            janela.add(visualizador);
+            janela.setLayout(new BorderLayout());
+            janela.add(visualizador, BorderLayout.CENTER);
+            janela.add(visualizador.criarBotoes(), BorderLayout.SOUTH);
             janela.pack();
             janela.setLocationRelativeTo(null);
             janela.setVisible(true);
@@ -64,6 +71,38 @@ public class Visualizador extends JPanel {
             repaint();
         });
         pausar();
+        controle.aguardarVez(); // se estiver parado, espera aqui até Start ou Avançar
+    }
+
+    private JPanel criarBotoes() {
+        JButton start = new JButton("Start");
+        JButton parar = new JButton("Parar");
+        JButton avancar = new JButton("Avançar");
+
+        parar.setEnabled(false); // começa parado
+
+        start.addActionListener(e -> {
+            controle.iniciar();
+            start.setEnabled(false);
+            parar.setEnabled(true);
+            avancar.setEnabled(false);
+        });
+
+        parar.addActionListener(e -> {
+            controle.parar();
+            start.setEnabled(true);
+            parar.setEnabled(false);
+            avancar.setEnabled(true);
+        });
+
+        avancar.addActionListener(e -> controle.avancar());
+
+        JPanel painel = new JPanel();
+        painel.setBackground(FUNDO);
+        painel.add(start);
+        painel.add(parar);
+        painel.add(avancar);
+        return painel;
     }
 
     private void pausar() {
